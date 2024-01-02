@@ -26,8 +26,8 @@ def gesture_recognition(hand_landmarks):
     yx_feature_ratio = np.abs(feature_vec[1]) / (np.abs(feature_vec[0]) + eps)
     
     # Calculate vectors
-    # vec01 = np.array([lm[1].x - lm[0].x, lm[1].y - lm[0].y])
 
+    # vec01 = np.array([lm[1].x - lm[0].x, lm[1].y - lm[0].y])
     # vec02 = np.array([lm[2].x - lm[0].x, lm[2].y - lm[0].y])
     vec23 = np.array([lm[3].x - lm[0].x, lm[3].y - lm[0].y])
     vec34 = np.array([lm[4].x - lm[0].x, lm[4].y - lm[0].y])

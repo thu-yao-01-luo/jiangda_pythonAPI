@@ -3,9 +3,10 @@ import numpy as np
 from ultralytics import YOLO
 from ultralytics.utils import ASSETS
 from ultralytics.models.yolo.detect import DetectionPredictor
-from globals import debug, mode, control_signal, gpio
-
-from wifi_camera import WifiCamera
+from globals import debug
+import globals
+if not debug:
+    from wifi_camera import WifiCamera
 
 # load a model
 model_path = "yolov8n.pt"
@@ -23,9 +24,9 @@ predictor = DetectionPredictor(overrides=args)
 
 def follow_mode():
     global debug
-    global mode
-    global control_signal
-    global gpio
+    # global mode
+    # global globals.control_signal
+    # global gpio
 
     thr_x = 0.10
     thr_y = 0.10
@@ -33,13 +34,13 @@ def follow_mode():
     thr_too_narrow = 0.4
     center_x = 0.5
     center_y = 0.6
-    follow_debug = False
+    follow_debug = True 
     thr_boundary = 0.05
     dof_follow = 6 # or 4
 
     print("Follow mode activated.")
     if follow_debug:
-        img_path = "./example.jpg"
+        img_path = "./example.jpg" # https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Elon_Musk_Colorado_2022_%28cropped2%29.jpg/440px-Elon_Musk_Colorado_2022_%28cropped2%29.jpg
         img = cv2.imread(img_path)
         results = model(source=img) # get results list
         predictor(source=img, model=model_path, stream=False,) # show the result in cv2 windows
@@ -68,12 +69,12 @@ def follow_mode():
 
         if is_person.sum() > 1 or is_bicycle.sum() > 1 or is_car.sum() > 0: # more than 1 person or 1 bike or car appears
             print("alert and set gpio!")
-            gpio = True
+            globals.gpio = True
         else:
             print("no alert")
-            gpio = False
+            globals.gpio = False
             
-        while mode == "follow":
+        while globals.mode == "follow":
             cv2.waitKey(10)
         return
     else:
@@ -83,7 +84,7 @@ def follow_mode():
         camera.Start()
 
         cv2.namedWindow('img')
-        while mode == "follow":
+        while globals.mode == "follow":
             # 接收到的图像在队列camera.imgQueue中
             if not camera.imgQueue.empty():
                 # 从队列中取出图像并显示
@@ -102,42 +103,20 @@ def follow_mode():
                 is_car = (boxes.cls == 2)
                 if is_person.sum() > 1 or is_bicycle.sum() > 1 or is_car.sum() > 0: # more than 1 person or 1 bike or car appears
                     # print("alert and set gpio!")
-                    gpio = True
-                    control_signal = "control"
+                    globals.gpio = True
+                    globals.control_signal = "control"
                 elif is_person.sum() == 1:
-                    # xyxy = boxes.xyxy[is_person] # https://docs.ultralytics.com/modes/predict/#boxes
-                    # xyxyn = boxes.xyxyn[is_person]
-                    # xywh = boxes.xywh[is_person]
-                    # print("xywhn", boxes.xywhn)
-                    # print("is_person", is_person, len(is_person))
-                    # print("results", boxes.xywhn[is_person])
-
                     if len(is_person) > 1:
                         xywhn = boxes.xywhn[is_person] # 2 dim
                     else:
                         xywhn = boxes.xywhn # 2 dim
 
-                    # print("before xywhn[0]", xywhn)
                     xywhn = xywhn[0] # 1 dim
-
-                    # print("after xywhn[0]", xywhn)
-
-                    # print("results:", results)  # https://docs.ultralytics.com/modes/predict/#working-with-results
-                    # print("names:", result.names)
-                    # print("shape: ", result.orig_shape)
-                    # print("result:", result)
-                    # print("boxes:", boxes)
-                    gpio = False
+                    globals.gpio = False
                     x = xywhn[0]
                     y = xywhn[1]
                     w = xywhn[2]
                     h = xywhn[3]
-
-                    # TODO: Error
-                    #             "D:\user\desktop\jiangda\jiangda\uav\PythonAPI\jiangda-uav.py", line
-                    #             316, in follow_mode
-                    #             x = xywhn[0]
-                    # IndexError: index 0 is out  of  bounds  for dimension 0 with size 0
 
                     priority = 0
                     x_bias = abs(x - center_x)
@@ -147,7 +126,6 @@ def follow_mode():
                     y_high = y - h / 2
                     y_low = y + h / 2
                     x_high = x + w / 2
-           
                     x_low = x - w / 2
 
                     if (w_bias > x_bias) and (w_bias > y_bias) or ((x_low < thr_boundary) and (x_high > 1 - thr_boundary)):
@@ -159,41 +137,39 @@ def follow_mode():
                     else:
                         priority = 0
 
-                    # if abs(x - 0.5) < abs(y - 0.5):
                     if priority == 2 and dof_follow == 6:
                         if y < center_y - thr_y:
-                            # control_signal = "backward"
-                            control_signal = "up"
+                            # globals.control_signal = "backward"
+                            globals.control_signal = "up"
                         elif y > center_y + thr_y:
-                            # control_signal = "forward"
-                            control_signal = "down"
+                            # globals.control_signal = "forward"
+                            globals.control_signal = "down"
                         else:
-                            control_signal = "control"
-                    # else:
+                            globals.control_signal = "control"
                     elif priority == 1:
                         if x < center_x - thr_x or x_low < thr_boundary:
-                            control_signal = "left"
+                            globals.control_signal = "left"
                         elif x > center_x + thr_x or x_high > 1 - thr_boundary:
-                            control_signal = "right"
+                            globals.control_signal = "right"
                         else:
-                            control_signal = "control"
+                            globals.control_signal = "control"
                     elif priority == 3 and dof_follow == 6:
                         if w > thr_too_wide or (x_low < thr_boundary) and (x_high > 1 - thr_boundary):
-                            control_signal = "backward"
+                            globals.control_signal = "backward"
                         elif w < thr_too_narrow:
-                            control_signal = "forward"
+                            globals.control_signal = "forward"
                         else:
                             print("Something goes wrong!")
-                            control_signal = "control"
+                            globals.control_signal = "control"
                     elif priority == 3 and dof_follow == 4 or priority == 2 and dof_follow == 4:
                         if w > thr_too_wide or (x_low < thr_boundary) and (x_high > 1 - thr_boundary) or (y_high < thr_boundary) or (abs(y - center_y) > thr_y):
-                            control_signal = "backward"
+                            globals.control_signal = "backward"
                         elif w < thr_too_narrow:
-                            control_signal = "forward"
+                            globals.control_signal = "forward"
                         else:
-                            control_signal = "control"
+                            globals.control_signal = "control"
                     else:
-                        control_signal = "control"
+                        globals.control_signal = "control"
 
 
                 predictor(source=img, model=model_path, stream=False,) # show the result in cv2 windows

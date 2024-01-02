@@ -1,4 +1,5 @@
-from globals import control_signal, mode
+# from globals import control_signal, mode
+import globals
 import mediapipe as mp
 import numpy as np
 import time
@@ -9,10 +10,8 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
-def hand_mode(init_height=100, init_wait=5):
-    global control_signal
-    global mode
-    if mode == "hand":
+def hand_mode():
+    if globals.mode == "hand":
         print("Hand-Control mode activated.")
 
         cap = cv2.VideoCapture(0)
@@ -20,7 +19,7 @@ def hand_mode(init_height=100, init_wait=5):
                 model_complexity=0,
                 min_detection_confidence=0.5,
                 min_tracking_confidence=0.5) as hands:
-            while cap.isOpened() and mode == "hand": # check current mode!
+            while cap.isOpened() and globals.mode == "hand": # check current mode!
                 success, image = cap.read()
                 if not success:
                     print("Ignoring empty camera frame.")
@@ -39,7 +38,7 @@ def hand_mode(init_height=100, init_wait=5):
                         gesture = gesture_recognition(hand_landmarks=hand_landmarks)
                         if gesture != "other":
                             print(f"capture {gesture}")
-                            control_signal = gesture
+                            globals.control_signal = gesture
                         mp_drawing.draw_landmarks(
                             image,
                             hand_landmarks,
@@ -52,5 +51,5 @@ def hand_mode(init_height=100, init_wait=5):
                     break
         cap.release()
     else:
-        print("hand end!")
+        print(f"mode {globals.mode}: hand end!")
         return
