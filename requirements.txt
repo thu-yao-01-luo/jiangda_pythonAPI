@@ -1,0 +1,7 @@
+mediapipe==0.9.1.0
+numpy==1.26.2
+opencv_contrib_python==4.8.1.78
+opencv_python==4.8.1.78
+pynput==1.7.6
+pywinusb==0.4.2
+ultralytics==8.0.231
