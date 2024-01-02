@@ -563,7 +563,6 @@ if __name__ == "__main__":
     warns = Thread(target=reminder)
     warns.start()
     keyboard_mode()
-
     while mode != "quit":
         if mode == "follow":
             follow_mode()
@@ -573,7 +572,6 @@ if __name__ == "__main__":
             continue
         else:
             raise NotImplementedError
-
     t.join()
     warns.join()
     print("The program exits!")
