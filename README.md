@@ -15,9 +15,11 @@ python demo-jiangda.py
 ```
 to test the functionalities including keyboard control, handpose control, detection and following. 
 
-### Keyboard Control
+### Keyboard Mode
 
-Press and release the key, one could enter specific mode or specific command.
+Press and release the key, one could enter specific mode or specific command. The mapping from key to mode / command 
+is defined by `CONTROL_SIGNAL`, `KEYBOARD_COMMANDS`, `KEYBOARD_GPIOS`, `KEYBOARD_MODES` in `globals.py`. Customization 
+on your own command mapping is welcomed! 
 
 | Key | mode |
 |--|--|
@@ -37,7 +39,24 @@ Press and release the key, one could enter specific mode or specific command.
 | j | open alarm |
 | l | close alarm | 
 
-### 
+### Handpose Mode
+
+![handpose](https://github.com/thu-yao-01-luo/jiangda_pythonAPI/assets/87383739/95f52740-9d17-44b4-a16b-4ea6d20f39fd)
+
+The handposes from left to right are `forward`, `backward`, `left`, `right`, `up`, `down`. The commands are defined by 
+`gesture_recognition` in `utils.py`. Customization on your own command mapping is welcomed! 
+
+### Follow Mode 
+
+#### Alarm 
+
+If there are more than 2 people or 1 bicycle or 1 car, the controller would set alarm open. **Customization of `alarm_module.py` is needed based on your GPIO!**   
+
+#### Follow
+
+### Quit Mode
+
+Exit the main program. UAV will land and controller is closed. 
 
 ### FlightController Class
 | Method | function |
@@ -67,6 +86,7 @@ Press and release the key, one could enter specific mode or specific command.
 ## Part Segmentation (ShapeNet)
 ### Data Preparation
 Download alignment **ShapeNet** [here](https://shapenet.cs.stanford.edu/media/shapenetcore_partanno_segmentation_benchmark_v0_normal.zip)  and save in `data/shapenetcore_partanno_segmentation_benchmark_v0_normal/`.
+
 ### Run
 ```
 ## Check model in ./models 
