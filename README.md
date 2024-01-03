@@ -92,4 +92,4 @@ Exit the main program. UAV will land and controller is closed.
 [keyboard monitoring with pynput](https://pynput.readthedocs.io/en/latest/keyboard.html)
 
 ## Acknowledge
-[Zhiheng Zheng](https://github.com/zzh-thu) for `alarm_module.py` part, [Lunwei Zhang](https://github.com/Steven-ZY) and [Zhiyuan Chen](https://github.com/Tomanoy) for `flight_controller.py` and `wifi_camera.py`. [Honzhi Zang](https://github.com/zanghz21) for handpose figure postprocessing.
+[Zhiheng Zheng](https://github.com/zzh-thu) for `alarm_module.py` part, [Lunwei Zhang](https://github.com/Tomanoy) and [Zhiyuan Chen](https://github.com/Steven-ZY) for `flight_controller.py` and `wifi_camera.py`. [Honzhi Zang](https://github.com/zanghz21) for handpose figure postprocessing.
