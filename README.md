@@ -15,6 +15,30 @@ python demo-jiangda.py
 ```
 to test the functionalities including keyboard control, handpose control, detection and following. 
 
+### Keyboard Control
+
+Press and release the key, one could enter specific mode or specific command.
+
+| Key | mode |
+|--|--|
+| k | keyboard mode |
+| f | follow mode |
+| h | hand mode |
+| q | quit mode |
+
+| Key | signal |
+|--|--|
+| w | forward |
+| s | backward |
+| a | left |
+| d | right |
+| o | up |
+| p | down |
+| j | open alarm |
+| l | close alarm | 
+
+### 
+
 ### FlightController Class
 | Method | function |
 |--|--|
